@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import AuthService from "../../config/authService";
+import service from "../../config/service";
 import { doctorSuccess } from "../../redux/slices/doctorSlice";
 import { patientSuccess } from "../../redux/slices/patientSlice";
 import SplineChart from "../../components/SplineChart";
@@ -16,15 +16,15 @@ const AdminDashboard = () => {
 
     useEffect(() => {
         const getAllDoctorsFunction = async () => {
-            const { data } = await AuthService.getAllDoctor();
+            const { data } = await service.getAllDoctor();
             dispatch(doctorSuccess({ data: data.data, type: "more" }));
         };
         const getAllPatientsFunction = async () => {
-            const { data } = await AuthService.getAllPatient();
+            const { data } = await service.getAllPatient();
             dispatch(patientSuccess({ data: data.data, type: "more" }));
         };
         const getAllSymptomsFunction = async () => {
-            const { data } = await AuthService.getAllSymptom();
+            const { data } = await service.getAllSymptom();
             dispatch(symptomSuccess({ data: data.data, type: "more" }));
         };
 
@@ -37,21 +37,21 @@ const AdminDashboard = () => {
         <div className="container">
             <section className="w-full grid lg:grid-cols-6 sm:grid-cols-3 small:grid-cols-2 items-center justify-start gap-6">
                 <div className="sm:size-36 small:size-28 flex flex-col items-center justify-center border shadow-smooth">
-                    <BsPerson className="sm:text-4xl small:text-2xl text-cyan-600" />
+                    <BsPerson className="sm:text-4xl small:text-2xl text-blue-700" />
                     <h1 className="sm:text-sm small:text-xs pc:text-lg text-gray-500 mt-1">Shifokorlar</h1>
-                    <h1 className="text-2xl text-cyan-600 mt-3">{doctors ? doctors.length : 0}</h1>
+                    <h1 className="text-2xl text-blue-700 mt-3">{doctors ? doctors.length : 0}</h1>
                 </div>
 
                 <div className="sm:size-36 small:size-28 flex flex-col items-center justify-center border shadow-smooth">
-                    <BsPerson className="sm:text-4xl small:text-2xl text-cyan-600" />
-                    <h1 className="sm:text-sm small:text-xs pc:text-lg text-gray-500 mt-1">Faol bemorlar</h1>
-                    <h1 className="text-2xl text-cyan-600 mt-3">{patients ? patients.length : 0}</h1>
+                    <BsPerson className="sm:text-4xl small:text-2xl text-blue-700" />
+                    <h1 className="sm:text-sm small:text-xs pc:text-lg text-gray-500 mt-1">Bemorlar</h1>
+                    <h1 className="text-2xl text-blue-700 mt-3">{patients ? patients.length : 0}</h1>
                 </div>
 
                 <div className="sm:size-36 small:size-28 flex flex-col items-center justify-center border shadow-smooth">
-                    <SlLayers className="sm:text-4xl small:text-2xl text-cyan-600" />
+                    <SlLayers className="sm:text-4xl small:text-2xl text-blue-700" />
                     <h1 className="sm:text-sm small:text-xs pc:text-lg text-gray-500 mt-1">Bo'limlar</h1>
-                    <h1 className="text-2xl text-cyan-600 mt-3">{symptoms ? symptoms.length : 0}</h1>
+                    <h1 className="text-2xl text-blue-700 mt-3">{symptoms ? symptoms.length : 0}</h1>
                 </div>
             </section>
 

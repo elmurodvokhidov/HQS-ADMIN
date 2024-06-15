@@ -9,20 +9,20 @@ api.interceptors.request.use((req) => {
     return req;
 });
 
-const AuthService = {
+const service = {
     // admin
     async adminLogin(admin) {
         const res = api.post('/admin/login', admin);
         return res;
     },
-    async getAdmin(id) {
-        const res = api.get(`/admin/info/${id}`);
+    async getAdmin() {
+        const res = api.get('/admin/info');
         return res;
     },
 
     // doctor
     async getDoctor(id) {
-        const res = api.get(`/doctors/${id}`);
+        const res = api.get(`/admin/doctors/${id}`);
         return res;
     },
     async getAllDoctor() {
@@ -43,28 +43,32 @@ const AuthService = {
     },
 
     // patient
-    async registerPatient(patient) {
-        const res = api.post('/patients/register', patient);
+    async createPatient(patient) {
+        const res = api.post('/admin/create-patient', patient);
         return res;
     },
     async getPatient(id) {
-        const res = api.get(`/patients/${id}`);
+        const res = api.get(`/admin/patients/${id}`);
         return res;
     },
     async getAllPatient() {
-        const res = api.get('/patients');
+        const res = api.get('/admin/patients');
         return res;
     },
     async markSeen(id) {
-        const res = api.put(`/patients/${id}/seen`);
+        const res = api.put(`/admin/patients/${id}/seen`);
         return res;
     },
     async updatePatient(id, patient) {
-        const res = api.put(`/patients/${id}`, patient);
+        const res = api.put(`/admin/patients/${id}`, patient);
         return res;
     },
     async deletePatient(id) {
-        const res = api.delete(`/patients/${id}`);
+        const res = api.delete(`/admin/patients/${id}`);
+        return res;
+    },
+    async deleteManyPatients(list) {
+        const res = api.delete('/admin/delete-many-patients', { data: { patientIds: list } });
         return res;
     },
 
@@ -91,4 +95,4 @@ const AuthService = {
     },
 };
 
-export default AuthService;
+export default service;

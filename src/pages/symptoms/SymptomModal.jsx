@@ -1,6 +1,6 @@
 import { useDispatch } from "react-redux";
 import { symptomStart } from "../../redux/slices/symptomSlice";
-import AuthService from "../../config/authService";
+import service from "../../config/service";
 import { Toast } from "../../config/sweetToast";
 
 const SymptomModal = ({
@@ -27,12 +27,12 @@ const SymptomModal = ({
             try {
                 dispatch(symptomStart());
                 if (!newSymptom._id) {
-                    await AuthService.createSymptom(newSymptom);
+                    await service.createSymptom(newSymptom);
                     Toast.fire({ icon: "success", title: "Yangi bo'lim qo'shildi" });
                 }
                 else {
                     const { _id, __v, createdAt, updatedAt, patients, doctors, ...others } = newSymptom;
-                    await AuthService.updateSymptom(newSymptom._id, others);
+                    await service.updateSymptom(newSymptom._id, others);
                     Toast.fire({ icon: "success", title: "Bo'lim ma'lumotlari o'zgardi" });
                 }
                 clearAndClose();

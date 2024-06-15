@@ -1,7 +1,9 @@
 import { useDispatch } from "react-redux";
 import { doctorFailure, doctorStart, doctorSuccess } from "../../redux/slices/doctorSlice";
-import AuthService from "../../config/authService";
+import service from "../../config/service";
 import { Toast } from "../../config/sweetToast";
+import { IoEyeOffOutline, IoEyeOutline } from "react-icons/io5";
+import { useState } from "react";
 
 const DoctorModal = ({
     symptoms,
@@ -14,6 +16,7 @@ const DoctorModal = ({
     getAllDoctorsFunction,
 }) => {
     const dispatch = useDispatch();
+    const [showPass, setShowPass] = useState(false);
 
     const getDoctorCred = (e) => {
         setNewDoctor({
@@ -27,12 +30,12 @@ const DoctorModal = ({
             try {
                 dispatch(doctorStart());
                 if (!newDoctor._id) {
-                    await AuthService.createDoctor(newDoctor);
+                    await service.createDoctor(newDoctor);
                     Toast.fire({ icon: "success", title: "Yangi shifokor qo'shildi" });
                 }
                 else {
                     const { _id, __v, createdAt, updatedAt, patients, ...others } = newDoctor;
-                    await AuthService.updateDoctor(newDoctor._id, others);
+                    await service.updateDoctor(newDoctor._id, others);
                     Toast.fire({ icon: "success", title: "Shifokor ma'lumotlari o'zgardi" });
                 }
                 clearAndClose();
@@ -114,7 +117,7 @@ const DoctorModal = ({
                                     }
                                 </select>
                             </div>
-                            <div className="mb-5">
+                            <div className="mb-5 relative">
                                 <label
                                     htmlFor="password"
                                     className="block mb-2 text-sm font-medium text-gray-900"
@@ -124,11 +127,18 @@ const DoctorModal = ({
                                 </label>
                                 <input
                                     onChange={getDoctorCred}
-                                    type="password"
+                                    type={showPass ? "text" : "password"}
                                     id="password"
                                     name="password"
                                     required
                                     className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" />
+                                <button
+                                    type='button'
+                                    onClick={() => setShowPass(!showPass)}
+                                    className='absolute bottom-2.5 right-2.5 text-xl text-gray-500'
+                                >
+                                    {showPass ? <IoEyeOffOutline /> : <IoEyeOutline />}
+                                </button>
                             </div>
                             <button onClick={createAndUpdateFunction} type="button" className="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">{isLoading ? "Loading..." : isUpdate ? "Saqlash" : "Qo'shish"}</button>
                         </form>

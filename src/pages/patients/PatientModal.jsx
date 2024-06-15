@@ -1,5 +1,5 @@
 import { useDispatch } from "react-redux";
-import AuthService from "../../config/authService";
+import service from "../../config/service";
 import { Toast } from "../../config/sweetToast";
 import { patientFailure, patientStart } from "../../redux/slices/patientSlice";
 
@@ -27,12 +27,12 @@ const PatientModal = ({
             try {
                 dispatch(patientStart());
                 if (!newPatient._id) {
-                    await AuthService.registerPatient(newPatient);
+                    await service.createPatient(newPatient);
                     Toast.fire({ icon: "success", title: "Yangi bemor qo'shildi" });
                 }
                 else {
                     const { _id, __v, createdAt, updatedAt, patients, ...others } = newPatient;
-                    await AuthService.updatePatient(newPatient._id, others);
+                    await service.updatePatient(newPatient._id, others);
                     Toast.fire({ icon: "success", title: "Bemor ma'lumotlari o'zgardi" });
                 }
                 clearAndClose();

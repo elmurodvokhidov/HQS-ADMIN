@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { doctorFailure, doctorStart, doctorSuccess } from "../../redux/slices/doctorSlice";
-import AuthService from "../../config/authService";
+import service from "../../config/service";
 import tick from "../../assets/icons/tick.svg";
 import copy from "../../assets/icons/copy.svg";
 import { FaPlus } from "react-icons/fa";
@@ -30,7 +30,7 @@ const Doctors = () => {
     const getAllDoctorsFunction = async () => {
         try {
             dispatch(doctorStart());
-            const { data } = await AuthService.getAllDoctor();
+            const { data } = await service.getAllDoctor();
             dispatch(doctorSuccess({ data: data.data, type: "more" }));
         } catch (error) {
             dispatch(doctorFailure(error.message));
@@ -41,7 +41,7 @@ const Doctors = () => {
     const getAllSymptomFunction = async () => {
         try {
             dispatch(symptomStart());
-            const { data } = await AuthService.getAllSymptom();
+            const { data } = await service.getAllSymptom();
             dispatch(symptomSuccess({ data: data.data, type: "more" }));
         } catch (error) {
             dispatch(symptomFailure(error.message));
@@ -81,7 +81,7 @@ const Doctors = () => {
 
     const handleDelete = async () => {
         try {
-            const { data } = await AuthService.deleteDoctor(isDelete);
+            const { data } = await service.deleteDoctor(isDelete);
             getAllDoctorsFunction();
             setIsDelete(null);
             Toast.fire({ icon: "success", title: data?.message });

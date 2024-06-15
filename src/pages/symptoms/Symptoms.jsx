@@ -4,7 +4,7 @@ import * as XLSX from 'xlsx';
 import tick from "../../assets/icons/tick.svg";
 import copy from "../../assets/icons/copy.svg";
 import { symptomFailure, symptomStart, symptomSuccess } from "../../redux/slices/symptomSlice";
-import AuthService from "../../config/authService";
+import service from "../../config/service";
 import { Toast } from "../../config/sweetToast";
 import { MdFileDownload } from "react-icons/md";
 import SymptomModal from "./SymptomModal";
@@ -24,7 +24,7 @@ const Symptoms = () => {
     const getAllSymptomFunction = async () => {
         try {
             dispatch(symptomStart());
-            const { data } = await AuthService.getAllSymptom();
+            const { data } = await service.getAllSymptom();
             dispatch(symptomSuccess({ data: data.data, type: "more" }));
         } catch (error) {
             dispatch(symptomFailure(error.message));
@@ -52,7 +52,7 @@ const Symptoms = () => {
 
     const handleDelete = async () => {
         try {
-            const { data } = await AuthService.deleteSymptom(isDelete);
+            const { data } = await service.deleteSymptom(isDelete);
             getAllSymptomFunction();
             setIsDelete(null);
             Toast.fire({ icon: "success", title: data?.message });

@@ -1,10 +1,9 @@
-import { Route, Routes } from "react-router-dom"
+import { Route, Routes, useNavigate } from "react-router-dom"
 import { useEffect, useState } from "react"
 import { useDispatch } from "react-redux"
 import { getCookie } from "./config/cookiesService"
-import AuthService from "./config/authService"
+import service from "./config/service"
 import { authSuccess } from "./redux/slices/authSlice"
-import { getIdFromToken } from "./config/decodeJWT"
 import AdminLogin from "./pages/admin/AdminLogin"
 import AdminLayout from "./pages/admin/AdminLayout"
 import AdminDashboard from "./pages/admin/AdminDashboard"
@@ -12,9 +11,11 @@ import Doctors from "./pages/doctors/Doctors"
 import Patients from "./pages/patients/Patients"
 import AdminProfile from "./pages/admin/AdminProfile"
 import Symptoms from "./pages/symptoms/Symptoms"
+import Reports from "./components/Reports"
 
 const App = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [modals, setModals] = useState({ sideModal: false });
 
   const handleModal = (modalName, value) => {
@@ -26,15 +27,14 @@ const App = () => {
   };
 
   useEffect(() => {
-    const token = getCookie("x-token");
-    if (token) {
+    if (getCookie("x-token")) {
       async function getUser() {
         try {
-          const { userId } = getIdFromToken(token);
-          const { data } = await AuthService.getAdmin(userId);
+          const { data } = await service.getAdmin();
           dispatch(authSuccess(data));
         } catch (error) {
           console.log(error);
+          navigate('/');
         }
       };
       getUser();
@@ -51,6 +51,7 @@ const App = () => {
           <Route path="patients" element={<Patients />} />
           <Route path="profile" element={<AdminProfile />} />
           <Route path="symptoms" element={<Symptoms />} />
+          <Route path="reports" element={<Reports />} />
         </Route>
       </Routes>
     </div>

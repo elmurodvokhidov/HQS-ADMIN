@@ -20,6 +20,33 @@
     background: #f8f8f8;
 }
 
+.sidebar a {
+    transition-property: all;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 300ms;
+}
+
+.sidebar a.active::before {
+    content: "";
+    display: inline-block;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 6px;
+    height: 100%;
+    border-radius: 4px;
+    background: rgb(29 78 216);
+}
+
+.sidebar a.active {
+    color: rgb(29 78 216);
+}
+
+.sidebar .cell:hover,
+.extraModal a:hover {
+    color: rgb(29 78 216);
+}
+
 .loader_dots_jump {
     width: 30px;
     aspect-ratio: 2.5;
