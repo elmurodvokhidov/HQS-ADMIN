@@ -2,6 +2,9 @@ import { useDispatch, useSelector } from "react-redux";
 import { symptomFailure, symptomStart, symptomSuccess } from "../redux/slices/symptomSlice";
 import service from "../config/service";
 import React, { useEffect, useState } from "react";
+import PolarAreaChart from "./PolarAreaChart";
+import { MdFileDownload } from "react-icons/md";
+import * as XLSX from 'xlsx';
 
 const Reports = () => {
     const { symptoms, isLoading } = useSelector(state => state.symptom);
@@ -64,6 +67,75 @@ const Reports = () => {
         totalPatients += symptom?.patients?.length;
         totalPayment += symptom?.patients?.reduce((sum, patient) => sum + patient?.amount, 0);
     });
+
+    const exportToExcel = (filteredSymptoms, totalPatients, totalPayment) => {
+        const fileName = 'reports.xlsx';
+
+        // Prepare data based on the table structure
+        const header1 = ["Umumiy kelgan bemorlar soni", "To'lov so'mmasi (so'mda)", "Shundan"];
+        const header2 = ["", "", ...filteredSymptoms.map(symptom => symptom.name)];
+        const header3 = ["", "", ...filteredSymptoms.map(() => ["soni", "so'mmasi"]).flat()];
+
+        // Add the totals row
+        const totalsRow = [
+            totalPatients,
+            totalPayment,
+            ...filteredSymptoms.map(symptom => [
+                symptom.patients.length || 0,
+                symptom.patients.reduce((total, patient) => total + (patient.amount || 0), 0)
+            ]).flat()
+        ];
+
+        const data = [
+            header1,
+            header2,
+            header3,
+            totalsRow
+        ];
+
+        const wb = XLSX.utils.book_new();
+        const ws = XLSX.utils.aoa_to_sheet(data);
+
+        // Merge cells for the headers
+        ws['!merges'] = [
+            { s: { r: 0, c: 0 }, e: { r: 2, c: 0 } }, // Merge "Umumiy kelgan bemorlar soni"
+            { s: { r: 0, c: 1 }, e: { r: 2, c: 1 } }, // Merge "To'lov so'mmasi (so'mda)"
+            { s: { r: 0, c: 2 }, e: { r: 0, c: 1 + (filteredSymptoms.length * 2) } }, // Merge "Shundan"
+            ...filteredSymptoms.map((_, index) => (
+                { s: { r: 1, c: 2 + (index * 2) }, e: { r: 1, c: 3 + (index * 2) } } // Merge each symptom name
+            ))
+        ];
+
+        // Adjust column widths
+        const columnWidths = data[0].map((_, colIndex) => ({
+            wch: data.reduce((acc, row) => Math.max(acc, String(row[colIndex] || "").length), 10) // Minimum width set to 10
+        }));
+        ws['!cols'] = columnWidths;
+
+        // Apply borders
+        const applyBorder = (cell) => {
+            if (!ws[cell]) ws[cell] = {};
+            if (!ws[cell].s) ws[cell].s = {};
+            ws[cell].s.border = {
+                top: { style: "medium" },
+                bottom: { style: "medium" },
+                left: { style: "medium" },
+                right: { style: "medium" }
+            };
+        };
+
+        // Apply borders to all cells
+        for (let R = 0; R < data.length; R++) {
+            for (let C = 0; C < data[R].length; C++) {
+                const cellAddress = XLSX.utils.encode_cell({ r: R, c: C });
+                applyBorder(cellAddress);
+            }
+        }
+
+        XLSX.utils.book_append_sheet(wb, ws, 'Reports');
+        XLSX.writeFile(wb, fileName);
+    };
+
 
     return (
         <div className="container">
@@ -150,6 +222,18 @@ const Reports = () => {
                     </tbody>
                 </table>
             </div>
+
+            {
+                !isLoading &&
+                <button
+                    onClick={() => exportToExcel(filteredSymptoms, totalPatients, totalPayment)}
+                    id="downloadExelBtn"
+                    className="size-8 pc:size-10 relative float-end flex items-center justify-center ml-8 mt-8 text-gray-400 border border-gray-300 outline-cyan-600 text-xl pc:text-2xl rounded-full hover:text-cyan-600 hover:bg-blue-100 transition-all">
+                    <MdFileDownload />
+                </button>
+            }
+
+            {symptoms.length > 0 && <PolarAreaChart symptoms={filteredSymptoms} />}
         </div>
     )
 }

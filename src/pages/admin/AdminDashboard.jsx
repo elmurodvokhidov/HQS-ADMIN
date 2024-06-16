@@ -56,7 +56,7 @@ const AdminDashboard = () => {
             </section>
 
             <section className="my-8 shadow-smooth">
-                {patients && <SplineChart data={patients} />}
+                {patients.length > 0 && <SplineChart data={patients} />}
             </section>
         </div>
     )
