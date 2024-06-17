@@ -42,6 +42,7 @@ const DoctorModal = ({
                 getAllDoctorsFunction();
             } catch (error) {
                 dispatch(doctorFailure());
+                Toast.fire({ icon: "error", title: error?.response?.data?.message || error.message });
             }
         }
         else {
