@@ -6,12 +6,15 @@ import { patientFailure, patientStart, patientSuccess } from "../../redux/slices
 import { Toast } from "../../config/sweetToast";
 import * as XLSX from 'xlsx';
 import { FaPlus } from "react-icons/fa";
-import { MdFileDownload } from "react-icons/md";
+import { MdOutlinePrint } from "react-icons/md";
 import PatientModal from "./PatientModal";
 import DeleteModal from "../../components/DeleteModal";
 import tick from "../../assets/icons/tick.svg";
 import copy from "../../assets/icons/copy.svg";
 import Pagination from "../../components/Pagination";
+import { Pencil } from "../../assets/icons/Pencil";
+import { Basket } from "../../assets/icons/Basket";
+import PrintModal from "./PrintModal";
 
 const Patients = () => {
     const { patients, isLoading } = useSelector(state => state.patient);
@@ -21,6 +24,7 @@ const Patients = () => {
     const [modal, setModal] = useState(false);
     const [isUpdate, setIsUpdate] = useState(false);
     const [isDelete, setIsDelete] = useState(null);
+    const [isPrint, setIsPrint] = useState(null);
     const [newPatient, setNewPatient] = useState({
         fullname: "",
         phoneNumber: "",
@@ -75,6 +79,7 @@ const Patients = () => {
         });
         setModal(false);
         setIsUpdate(false);
+        setIsPrint(null);
     };
 
     const openUpdateModal = (patient) => {
@@ -149,6 +154,34 @@ const Patients = () => {
     const indexOfLastPatient = page * limit;
     const indexOfFirstPatient = indexOfLastPatient - limit;
     const pagePatients = patients?.slice(indexOfFirstPatient, indexOfLastPatient);
+
+    const createAndUpdateFunction = async () => {
+        if (newPatient.fullname !== "" && newPatient.phoneNumber !== "" && newPatient.symptom !== "" && newPatient.password !== "") {
+            try {
+                dispatch(patientStart());
+                if (!newPatient._id) {
+                    const { data } = await service.createPatient(newPatient);
+                    Toast.fire({ icon: "success", title: "Yangi bemor qo'shildi" });
+                    clearAndClose();
+                    getAllPatientFunction();
+                    setIsPrint(data.data);
+                }
+                else {
+                    const { _id, __v, createdAt, updatedAt, patients, ...others } = newPatient;
+                    await service.updatePatient(newPatient._id, others);
+                    Toast.fire({ icon: "success", title: "Bemor ma'lumotlari o'zgardi" });
+                    clearAndClose();
+                    getAllPatientFunction();
+                }
+            } catch (error) {
+                dispatch(patientFailure());
+                Toast.fire({ icon: "error", title: error?.response?.data?.message || error.message });
+            }
+        }
+        else {
+            Toast.fire({ icon: "warning", title: "Iltimos, barcha bo'sh joylarni to'ldiring!" });
+        }
+    };
 
     return (
         <div className="container">
@@ -244,12 +277,18 @@ const Patients = () => {
                                             <button
                                                 onClick={() => openUpdateModal(patient)}
                                                 className="font-medium text-blue-600 hover:underline disabled:no-underline disabled:text-gray-300">
-                                                Tahrirlash
+                                                <Pencil />
                                             </button>
                                             <button
                                                 onClick={() => setIsDelete(patient._id)}
                                                 className="font-medium text-red-600 hover:underline disabled:no-underline disabled:text-gray-300">
-                                                O'chirish
+                                                <Basket />
+                                            </button>
+                                            <button
+                                                onClick={() => setIsPrint(patient)}
+                                                className="text-lg pc:text-xl text-green-500"
+                                            >
+                                                <MdOutlinePrint />
                                             </button>
                                         </div>
                                     </td>
@@ -280,13 +319,18 @@ const Patients = () => {
                 newPatient={newPatient}
                 setNewPatient={setNewPatient}
                 clearAndClose={clearAndClose}
-                getAllPatientFunction={getAllPatientFunction}
+                createAndUpdateFunction={createAndUpdateFunction}
             />
 
             <DeleteModal
                 isDelete={isDelete}
                 setIsDelete={setIsDelete}
                 handleDelete={checkedPatientsList.length > 0 ? deleteManyPatientsFunction : handleDelete}
+            />
+
+            <PrintModal
+                data={isPrint}
+                clearAndClose={clearAndClose}
             />
         </div >
     )

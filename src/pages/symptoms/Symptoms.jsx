@@ -1,8 +1,6 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import * as XLSX from 'xlsx';
-import tick from "../../assets/icons/tick.svg";
-import copy from "../../assets/icons/copy.svg";
 import { symptomFailure, symptomStart, symptomSuccess } from "../../redux/slices/symptomSlice";
 import service from "../../config/service";
 import { Toast } from "../../config/sweetToast";
@@ -10,6 +8,8 @@ import { MdFileDownload } from "react-icons/md";
 import SymptomModal from "./SymptomModal";
 import DeleteModal from "../../components/DeleteModal";
 import { FaPlus } from "react-icons/fa";
+import { Pencil } from "../../assets/icons/Pencil";
+import { Basket } from "../../assets/icons/Basket";
 
 const Symptoms = () => {
     const { symptoms, isLoading } = useSelector(state => state.symptom);
@@ -127,12 +127,12 @@ const Symptoms = () => {
                                             <button
                                                 onClick={() => openUpdateModal(symptom)}
                                                 className="font-medium text-blue-600 hover:underline disabled:no-underline disabled:text-gray-300">
-                                                Tahrirlash
+                                                <Pencil />
                                             </button>
                                             <button
                                                 onClick={() => setIsDelete(symptom._id)}
                                                 className="font-medium text-red-600 hover:underline disabled:no-underline disabled:text-gray-300">
-                                                O'chirish
+                                                <Basket />
                                             </button>
                                         </div>
                                     </td>

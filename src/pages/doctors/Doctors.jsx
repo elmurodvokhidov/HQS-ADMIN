@@ -10,7 +10,9 @@ import DoctorModal from "./DoctorModal";
 import DeleteModal from "../../components/DeleteModal";
 import { Toast } from "../../config/sweetToast";
 import * as XLSX from 'xlsx';
-import { MdFileDownload } from "react-icons/md";
+import { MdFileDownload, MdOutlinePrint } from "react-icons/md";
+import { Basket } from "../../assets/icons/Basket";
+import { Pencil } from "../../assets/icons/Pencil";
 
 const Doctors = () => {
     const { doctors, isLoading } = useSelector(state => state.doctor);
@@ -167,12 +169,12 @@ const Doctors = () => {
                                             <button
                                                 onClick={() => openUpdateModal(doctor)}
                                                 className="font-medium text-blue-600 hover:underline disabled:no-underline disabled:text-gray-300">
-                                                Tahrirlash
+                                                <Pencil />
                                             </button>
                                             <button
                                                 onClick={() => setIsDelete(doctor._id)}
                                                 className="font-medium text-red-600 hover:underline disabled:no-underline disabled:text-gray-300">
-                                                O'chirish
+                                                <Basket />
                                             </button>
                                         </div>
                                     </td>
