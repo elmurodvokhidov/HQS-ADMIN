@@ -19,6 +19,7 @@ const Symptoms = () => {
     const [isDelete, setIsDelete] = useState(null);
     const [newSymptom, setNewSymptom] = useState({
         name: "",
+        price: "",
     });
 
     const getAllSymptomFunction = async () => {
@@ -39,6 +40,7 @@ const Symptoms = () => {
     const clearAndClose = () => {
         setNewSymptom({
             name: "",
+            price: "",
         });
         setModal(false);
         setIsUpdate(false);
@@ -63,11 +65,12 @@ const Symptoms = () => {
 
     const exportToExcel = () => {
         const fileName = 'symptoms.xlsx';
-        const header = ['Nomi', 'Shifokorlar soni', 'Bemorlar soni'];
+        const header = ['Nomi', 'Narxi', 'Shifokorlar soni', 'Bemorlar soni'];
 
         const wb = XLSX.utils.book_new();
         const data = symptoms.map(symptom => [
             symptom.name || '',
+            (symptom?.price || '0').toString(),
             (symptom?.doctors?.length || '0').toString(),
             (symptom?.patients?.length || '0').toString(),
         ]);
@@ -84,7 +87,10 @@ const Symptoms = () => {
     return (
         <div className="container">
             <div className="flex items-center justify-between mb-8">
-                <h1 className="text-xl">Bo'limlar ro'yhati</h1>
+                <div className="flex flex-col justify-start text-sm pc:text-base">
+                    <h1 className="text-xl pc:text-2xl">Bo'limlar ro'yhati</h1>
+                    <p>Miqdor <span className="inline-block w-4 h-[1px] mx-1 align-middle bg-black"></span> <span>{symptoms?.length}</span></p>
+                </div>
                 <button onClick={() => setModal(true)} className="flex items-center gap-2 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800" type="button">
                     Yangi qo'shish <FaPlus />
                 </button>
@@ -96,6 +102,9 @@ const Symptoms = () => {
                         <tr>
                             <th scope="col" className="px-6 py-3">
                                 Nomi
+                            </th>
+                            <th scope="col" className="px-6 py-3">
+                                Narxi
                             </th>
                             <th scope="col" className="px-6 py-3">
                                 Shifokorlar soni
@@ -116,6 +125,9 @@ const Symptoms = () => {
                                     <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
                                         {symptom?.name}
                                     </th>
+                                    <td className="px-6 py-4 font-bold">
+                                        {symptom?.price?.toLocaleString()}
+                                    </td>
                                     <td className="px-6 py-4 font-bold">
                                         {symptom?.doctors?.length}
                                     </td>

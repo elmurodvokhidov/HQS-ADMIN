@@ -5,7 +5,6 @@ import { Toast } from "../../config/sweetToast";
 import { Cross } from "../../assets/icons/Cross";
 
 const SymptomModal = ({
-    symptoms,
     isLoading,
     isUpdate,
     modal,
@@ -76,6 +75,23 @@ const SymptomModal = ({
                                     type="text"
                                     id="name"
                                     name="name"
+                                    required
+                                    className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" />
+                            </div>
+                            <div>
+                                <label
+                                    htmlFor="price"
+                                    className="block mb-2 text-sm font-medium text-gray-900"
+                                >
+                                    <span>Narxi</span>
+                                    <span className="ml-1 text-red-500">*</span>
+                                </label>
+                                <input
+                                    onChange={getSymptomCred}
+                                    value={newSymptom.price}
+                                    type="number"
+                                    id="price"
+                                    name="price"
                                     required
                                     className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" />
                             </div>

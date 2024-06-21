@@ -15,6 +15,7 @@ import Pagination from "../../components/Pagination";
 import { Pencil } from "../../assets/icons/Pencil";
 import { Basket } from "../../assets/icons/Basket";
 import PrintModal from "./PrintModal";
+import { BiArchiveIn, BiArchiveOut } from "react-icons/bi";
 
 const Patients = () => {
     const { patients, isLoading } = useSelector(state => state.patient);
@@ -25,6 +26,7 @@ const Patients = () => {
     const [isUpdate, setIsUpdate] = useState(false);
     const [isDelete, setIsDelete] = useState(null);
     const [isPrint, setIsPrint] = useState(null);
+    const [isArchive, setIsArchive] = useState(false);
     const [newPatient, setNewPatient] = useState({
         fullname: "",
         phoneNumber: "",
@@ -104,7 +106,7 @@ const Patients = () => {
         const header = ['Ism (FIO)', 'Telefon', 'Kasallik turi', 'Shifokor'];
 
         const wb = XLSX.utils.book_new();
-        const data = patients.map(patient => [
+        const data = filteredPatients.map(patient => [
             patient.fullname || '',
             (patient.phoneNumber || '').toString(),
             patient?.symptom?.name || '',
@@ -151,12 +153,13 @@ const Patients = () => {
         }
     };
 
+    const filteredPatients = patients?.filter(patient => patient?.seen === isArchive);
     const indexOfLastPatient = page * limit;
     const indexOfFirstPatient = indexOfLastPatient - limit;
-    const pagePatients = patients?.slice(indexOfFirstPatient, indexOfLastPatient);
+    const pagePatients = filteredPatients?.slice(indexOfFirstPatient, indexOfLastPatient);
 
     const createAndUpdateFunction = async () => {
-        if (newPatient.fullname !== "" && newPatient.phoneNumber !== "" && newPatient.symptom !== "" && newPatient.password !== "") {
+        if (newPatient.fullname !== "" && newPatient.phoneNumber !== "" && newPatient.symptom !== "" && newPatient.doctor !== "") {
             try {
                 dispatch(patientStart());
                 if (!newPatient._id) {
@@ -186,7 +189,10 @@ const Patients = () => {
     return (
         <div className="container">
             <div className="flex items-center justify-between mb-8">
-                <h1 className="text-xl">Bemorlar ro'yhati</h1>
+                <div className="flex flex-col justify-start text-sm pc:text-base">
+                    <h1 className="text-xl pc:text-2xl">{isArchive ? "Arxivdagi bemorlar ro'yhati" : "Bemorlar ro'yhati"}</h1>
+                    <p>Miqdor <span className="inline-block w-4 h-[1px] mx-1 align-middle bg-black"></span> <span>{filteredPatients?.length}</span></p>
+                </div>
                 <button onClick={() => setModal(true)} className="flex items-center gap-2 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800" type="button">
                     Yangi qo'shish <FaPlus />
                 </button>
@@ -198,12 +204,12 @@ const Patients = () => {
                         <tr>
                             <th scope="col" className="px-6 py-3">
                                 <input
-                                    disabled={patients?.length === 0}
-                                    checked={patients?.length > 0 && patients?.every(patient => checkedPatientsList.includes(patient._id))}
+                                    disabled={filteredPatients?.length === 0}
+                                    checked={filteredPatients?.length > 0 && filteredPatients?.every(patient => checkedPatientsList.includes(patient._id))}
                                     onChange={(e) => {
                                         if (e.target.checked) {
                                             // Agar input belgilansa, barcha idlarni ro'yxatga saqlash
-                                            setCheckedPatientsList(patients?.map(patient => patient._id));
+                                            setCheckedPatientsList(filteredPatients?.map(patient => patient._id));
                                         } else {
                                             // Agar input belgilanmagan bo'lsa, ro'yxatni tozalash
                                             setCheckedPatientsList([]);
@@ -232,11 +238,14 @@ const Patients = () => {
                                 Amallar
                             </th>
                             <th scope="col" className="px-6 py-3">
-                                <button onClick={openManyDeleteModal} className="size-6 pc:size-8 flex items-center justify-center text-sm pc:text-base border rounded-full text-red-600 border-red-600 hover:bg-red-600 hover:text-white transition-all duration-300">
-                                    <svg stroke="currentColor" fill="currentColor" strokeWidth="0" viewBox="0 0 16 16" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg">
-                                        <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z"></path>
-                                    </svg>
-                                </button>
+                                <div className="flex items-center gap-2">
+                                    <button onClick={openManyDeleteModal} className="size-6 pc:size-8 flex items-center justify-center text-sm pc:text-base border rounded-full text-red-600 border-red-600 hover:bg-red-600 hover:text-white transition-all duration-300">
+                                        <Basket />
+                                    </button>
+                                    <button onClick={() => setIsArchive(!isArchive)} className="size-6 pc:size-8 flex items-center justify-center text-base border rounded-full text-gray-600 border-gray-600 hover:bg-gray-600 hover:text-white transition-all duration-300">
+                                        {isArchive ? <BiArchiveOut /> : <BiArchiveIn />}
+                                    </button>
+                                </div>
                             </th>
                         </tr>
                     </thead>
@@ -303,7 +312,7 @@ const Patients = () => {
             {
                 !isLoading &&
                 <Pagination
-                    data={patients}
+                    data={filteredPatients}
                     page={page}
                     setPage={setPage}
                     limit={limit}

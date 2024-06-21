@@ -44,8 +44,14 @@ const AdminDashboard = () => {
 
                 <div className="sm:size-36 small:size-28 flex flex-col items-center justify-center border shadow-smooth">
                     <BsPerson className="sm:text-4xl small:text-2xl text-blue-700" />
-                    <h1 className="sm:text-sm small:text-xs pc:text-lg text-gray-500 mt-1">Bemorlar</h1>
-                    <h1 className="text-2xl text-blue-700 mt-3">{patients ? patients.length : 0}</h1>
+                    <h1 className="sm:text-sm small:text-xs pc:text-lg text-gray-500 mt-1">Faol Bemorlar</h1>
+                    <h1 className="text-2xl text-blue-700 mt-3">{patients ? patients.filter(patient => !patient?.seen).length : 0}</h1>
+                </div>
+
+                <div className="sm:size-36 small:size-28 flex flex-col items-center justify-center border shadow-smooth">
+                    <BsPerson className="sm:text-4xl small:text-2xl text-blue-700" />
+                    <h1 className="sm:text-sm small:text-xs pc:text-lg text-gray-500 mt-1">Arxiv Bemorlar</h1>
+                    <h1 className="text-2xl text-blue-700 mt-3">{patients ? patients.filter(patient => patient?.seen).length : 0}</h1>
                 </div>
 
                 <div className="sm:size-36 small:size-28 flex flex-col items-center justify-center border shadow-smooth">

@@ -60,24 +60,25 @@ const Reports = () => {
         };
     });
 
-    let totalPatients = 0;
+    let totalPatients = [];
     let totalPayment = 0;
 
     filteredSymptoms?.forEach(symptom => {
-        totalPatients += symptom?.patients?.length;
+        totalPatients.push(symptom?.patients);
         totalPayment += symptom?.patients?.reduce((sum, patient) => sum + patient?.amount, 0);
     });
 
-    const exportToExcel = (filteredSymptoms, totalPatients, totalPayment) => {
+    const exportToExcel = (filteredSymptoms, totalPatients, totalPayment, groupedPatients) => {
         const fileName = 'reports.xlsx';
 
         // Prepare data based on the table structure
-        const header1 = ["Umumiy kelgan bemorlar soni", "To'lov so'mmasi (so'mda)", "Shundan"];
-        const header2 = ["", "", ...filteredSymptoms.map(symptom => symptom.name)];
-        const header3 = ["", "", ...filteredSymptoms.map(() => ["soni", "so'mmasi"]).flat()];
+        const header1 = ["Umumiy kelgan bemorlar soni", "", "To'lov so'mmasi (so'mda)", "Shundan"];
+        const header2 = ["", "", "", ...filteredSymptoms.map(symptom => symptom.name)];
+        const header3 = ["", "", "", ...filteredSymptoms.map(() => ["soni", "so'mmasi"]).flat()];
 
         // Add the totals row
         const totalsRow = [
+            "Jami",
             totalPatients,
             totalPayment,
             ...filteredSymptoms.map(symptom => [
@@ -86,11 +87,24 @@ const Reports = () => {
             ]).flat()
         ];
 
+        // Add the grouped patients rows
+        const groupedRows = Object.keys(groupedPatients).map(date => [
+            date,
+            groupedPatients[date].length,
+            groupedPatients[date].reduce((sum, patient) => sum + (patient.amount || 0), 0),
+            ...filteredSymptoms.map(symptom => [
+                groupedPatients[date].filter(item => item.symptom === symptom._id).length,
+                groupedPatients[date].filter(item => item.symptom === symptom._id)
+                    .reduce((sum, patient) => sum + (patient.amount || 0), 0)
+            ]).flat()
+        ]);
+
         const data = [
             header1,
             header2,
             header3,
-            totalsRow
+            totalsRow,
+            ...groupedRows
         ];
 
         const wb = XLSX.utils.book_new();
@@ -98,11 +112,11 @@ const Reports = () => {
 
         // Merge cells for the headers
         ws['!merges'] = [
-            { s: { r: 0, c: 0 }, e: { r: 2, c: 0 } }, // Merge "Umumiy kelgan bemorlar soni"
-            { s: { r: 0, c: 1 }, e: { r: 2, c: 1 } }, // Merge "To'lov so'mmasi (so'mda)"
-            { s: { r: 0, c: 2 }, e: { r: 0, c: 1 + (filteredSymptoms.length * 2) } }, // Merge "Shundan"
+            { s: { r: 0, c: 0 }, e: { r: 2, c: 1 } }, // Merge "Umumiy kelgan bemorlar soni"
+            { s: { r: 0, c: 2 }, e: { r: 2, c: 2 } }, // Merge "To'lov so'mmasi (so'mda)"
+            { s: { r: 0, c: 3 }, e: { r: 0, c: 3 + (filteredSymptoms.length * 2) - 1 } }, // Merge "Shundan"
             ...filteredSymptoms.map((_, index) => (
-                { s: { r: 1, c: 2 + (index * 2) }, e: { r: 1, c: 3 + (index * 2) } } // Merge each symptom name
+                { s: { r: 1, c: 3 + (index * 2) }, e: { r: 1, c: 4 + (index * 2) } } // Merge each symptom name
             ))
         ];
 
@@ -112,8 +126,8 @@ const Reports = () => {
         }));
         ws['!cols'] = columnWidths;
 
-        // Apply borders
-        const applyBorder = (cell) => {
+        // Apply bold borders
+        const applyBoldBorder = (cell) => {
             if (!ws[cell]) ws[cell] = {};
             if (!ws[cell].s) ws[cell].s = {};
             ws[cell].s.border = {
@@ -128,7 +142,7 @@ const Reports = () => {
         for (let R = 0; R < data.length; R++) {
             for (let C = 0; C < data[R].length; C++) {
                 const cellAddress = XLSX.utils.encode_cell({ r: R, c: C });
-                applyBorder(cellAddress);
+                applyBoldBorder(cellAddress);
             }
         }
 
@@ -136,6 +150,19 @@ const Reports = () => {
         XLSX.writeFile(wb, fileName);
     };
 
+    const groupByDate = (patients) => {
+        const groups = {};
+        patients.forEach(patient => {
+            const date = new Date(patient.createdAt);
+            const key = `${date.getDate()}.${date.getMonth() + 1}.${date.getFullYear()}`;
+            if (!groups[key]) {
+                groups[key] = [];
+            }
+            groups[key].push(patient);
+        });
+        return groups;
+    };
+    const groupedPatients = groupByDate(totalPatients.flat());
 
     return (
         <div className="container">
@@ -186,7 +213,7 @@ const Reports = () => {
                 <table className="min-w-full bg-white border-2 border-gray-300">
                     <thead>
                         <tr>
-                            <th rowSpan={3} className="px-4 py-2 border-2">Umumiy kelgan bemorlar soni</th>
+                            <th rowSpan={3} colSpan={2} className="px-4 py-2 border-2">Umumiy kelgan bemorlar soni</th>
                             <th rowSpan={3} className="px-4 py-2 border-2">To'lov so'mmasi (so'mda)</th>
                             <th colSpan={filteredSymptoms?.length * 2} className="px-4 py-2 border-2">Shundan</th>
                         </tr>
@@ -198,27 +225,47 @@ const Reports = () => {
                         <tr>
                             {filteredSymptoms?.map((detail, index) => (
                                 <React.Fragment key={`fragment-${index}`}>
-                                    <th key={`count-${index}`} className="px-4 py-2 border-2">soni</th>
-                                    <th key={`payment-${index}`} className="px-4 py-2 border-2">so'mmasi</th>
+                                    <th className="px-4 py-2 border-2">soni</th>
+                                    <th className="px-4 py-2 border-2">so'mmasi</th>
                                 </React.Fragment>
                             ))}
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
-                            <td className="px-4 py-2 border-2">{totalPatients}</td>
-                            <td className="px-4 py-2 border-2">{totalPayment}</td>
+                            <td className="px-4 py-2 border-2">Jami</td>
+                            <td className="px-4 py-2 border-2">{totalPatients.flat().length}</td>
+                            <td className="px-4 py-2 border-2">{totalPayment?.toLocaleString()}</td>
                             {filteredSymptoms?.map((detail, index) => (
                                 <React.Fragment key={`values-${index}`}>
-                                    <td key={`count-value-${index}`} className="px-4 py-2 border-2">
+                                    <td className="px-4 py-2 border-2">
                                         {detail?.patients?.length}
                                     </td>
-                                    <td key={`payment-value-${index}`} className="px-4 py-2 border-2">
-                                        {detail?.patients?.reduce((total, patient) => total + patient?.amount, 0)}
+                                    <td className="px-4 py-2 border-2">
+                                        {detail?.patients?.reduce((total, patient) => total + patient?.amount, 0)?.toLocaleString()}
                                     </td>
                                 </React.Fragment>
                             ))}
                         </tr>
+                        {Object.keys(groupedPatients).map(date => (
+                            <tr key={date}>
+                                <td className="px-4 py-2 border-2">{date}</td>
+                                <td className="px-4 py-2 border-2">{groupedPatients[date].length}</td>
+                                <td className="px-4 py-2 border-2">{groupedPatients[date].reduce((sum, patient) => sum + patient?.amount, 0)?.toLocaleString()}</td>
+                                {filteredSymptoms.map(symptom => (
+                                    <React.Fragment key={symptom._id}>
+                                        <td className="px-4 py-2 border-2">
+                                            {groupedPatients[date].filter(item => item.symptom === symptom._id).length}
+                                        </td>
+                                        <td className="px-4 py-2 border-2">
+                                            {groupedPatients[date].filter(item => item.symptom === symptom._id)?.reduce((sum, patient) => sum + patient?.amount, 0)?.toLocaleString()}
+                                        </td>
+                                    </React.Fragment>
+                                ))}
+
+                            </tr>
+                        ))}
+
                     </tbody>
                 </table>
             </div>
@@ -226,7 +273,7 @@ const Reports = () => {
             {
                 !isLoading &&
                 <button
-                    onClick={() => exportToExcel(filteredSymptoms, totalPatients, totalPayment)}
+                    onClick={() => exportToExcel(filteredSymptoms, totalPatients.flat().length, totalPayment, groupedPatients)}
                     id="downloadExelBtn"
                     className="size-8 pc:size-10 relative float-end flex items-center justify-center ml-8 mt-8 text-gray-400 border border-gray-300 outline-cyan-600 text-xl pc:text-2xl rounded-full hover:text-cyan-600 hover:bg-blue-100 transition-all">
                     <MdFileDownload />

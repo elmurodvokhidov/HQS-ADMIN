@@ -123,6 +123,7 @@ export default function Pagination({ data, page, setPage, limit, exportToExcel }
 
 
             <button
+                disabled={data.length === 0}
                 onClick={exportToExcel}
                 id="downloadExelBtn"
                 className="size-8 pc:size-10 relative float-end flex items-center justify-center ml-8 text-gray-400 border border-gray-300 outline-cyan-600 text-xl pc:text-2xl rounded-full hover:text-cyan-600 hover:bg-blue-100 transition-all"

@@ -40,10 +40,15 @@ const PrintModal = ({
                         </button>
                     </div>
                     <div className="flex flex-col items-center gap-4 py-4">
-                        <div ref={receiptRef} className="w-72 border border-gray-300 rounded-lg bg-white text-center py-2">
-                            <h2 style={{ fontSize: '95px', lineHeight: '1', textAlign: 'center' }} className="my-2">
-                                {data?.symptom?.name?.length > 3 ? data?.symptom?.name.slice(0, 3) + "." : data?.symptom?.name} {data?.queueNumber}
-                            </h2>
+                        <div ref={receiptRef} className="w-72 border border-gray-300 rounded-lg bg-white text-center p-4">
+                            <center>
+                                <h3 style={{ fontSize: '20px' }}>Sizning raqamingiz:</h3>
+                                <h1 style={{ fontSize: '60px', fontWeight: '600' }}>{data?.queueNumber}</h1>
+                                <h2 style={{ fontSize: '18px', marginBottom: '10px', fontWeight: '600', textTransform: 'uppercase' }}>Sizdan oldin navbatda: <span>{data?.symptom?.patients?.filter(patient => patient?.queueNumber < data?.queueNumber).length}</span></h2>
+                                <h6 style={{ fontSize: '15px' }}>Tanlangan xizmatlar:</h6>
+                                <h2 style={{ fontSize: '25px', marginBottom: '10px', fontWeight: '600', textTransform: 'uppercase' }}>{data?.symptom?.name}</h2>
+                                <h3 style={{ fontSize: '15px' }}>Kelgan vaqt: <span>{new Date(data?.createdAt).toLocaleString()}</span></h3>
+                            </center>
                         </div>
                         <button onClick={handlePrint} className="w-32 h-10 rounded-3xl bg-cyan-600">Chop etish</button>
                     </div>
