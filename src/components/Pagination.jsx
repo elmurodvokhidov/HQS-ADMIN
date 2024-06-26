@@ -89,7 +89,7 @@ export default function Pagination({ data, page, setPage, limit, exportToExcel }
                             disabled={currentPage === 1}
                         >
                             <span className="sr-only">Previous</span>
-                            <FaChevronLeft className="h-5 w-5" aria-hidden="true" />
+                            <FaChevronLeft aria-hidden="true" />
                         </button>
 
                         {/* Render page numbers */}
@@ -115,7 +115,7 @@ export default function Pagination({ data, page, setPage, limit, exportToExcel }
                             disabled={currentPage === totalPages}
                         >
                             <span className="sr-only">Next</span>
-                            <FaChevronRight className="h-5 w-5" aria-hidden="true" />
+                            <FaChevronRight aria-hidden="true" />
                         </button>
                     </nav>
                 </div>

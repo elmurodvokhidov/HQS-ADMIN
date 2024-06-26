@@ -253,7 +253,7 @@ const Patients = () => {
                         {/* {isLoading ? <tr><td className="py-12 text-center text-lg odd:bg-white even:bg-gray-50" colSpan={10}>Yuklanmoqda...</td></tr> : <> */}
                         {pagePatients?.length > 0 ?
                             pagePatients.map(patient => (
-                                <tr key={patient._id} className={`${patient?.seen && 'text-gray-300'} odd:bg-white even:bg-gray-50 border-b`}>
+                                <tr key={patient._id} className="odd:bg-white even:bg-gray-50 border-b">
                                     <td scope="row" className="px-6 py-4">
                                         <input
                                             checked={checkedPatientsList.includes(patient._id)}
@@ -262,10 +262,10 @@ const Patients = () => {
                                             className="align-middle"
                                         />
                                     </td>
-                                    <th scope="row" className={`${patient?.seen ? 'text-gray-300' : 'text-gray-900'} px-6 py-4 font-medium whitespace-nowrap`}>
+                                    <th scope="row" className="px-6 py-4 font-medium whitespace-nowrap">
                                         {patient?.fullname}
                                     </th>
-                                    <td onClick={() => handleCopy(patient?.phoneNumber)} className={`${patient?.seen ? 'text-gray-300' : 'text-blue-600'} px-6 py-4 flex items-center gap-1 cursor-pointer`}>
+                                    <td onClick={() => handleCopy(patient?.phoneNumber)} className="text-blue-600 px-6 py-4 flex items-center gap-1 cursor-pointer">
                                         {patient?.phoneNumber}
                                         <img
                                             src={copied === patient?.phoneNumber ? tick : copy}
