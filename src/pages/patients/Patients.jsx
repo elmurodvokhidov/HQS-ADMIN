@@ -16,6 +16,9 @@ import { Pencil } from "../../assets/icons/Pencil";
 import { Basket } from "../../assets/icons/Basket";
 import PrintModal from "./PrintModal";
 import { BiArchiveIn, BiArchiveOut } from "react-icons/bi";
+import { Link } from "react-router-dom";
+import { LiaChartPieSolid } from "react-icons/lia";
+import { TbReportAnalytics } from "react-icons/tb";
 
 const Patients = () => {
     const { patients, isLoading } = useSelector(state => state.patient);
@@ -32,6 +35,10 @@ const Patients = () => {
         phoneNumber: "",
         symptom: "",
         doctor: "",
+        dateOfBirth: "",
+        gender: "",
+        passport: "",
+        email: "",
     });
     const [checkedPatientsList, setCheckedPatientsList] = useState([]);
     const [limit, setLimit] = useState(30);
@@ -78,6 +85,10 @@ const Patients = () => {
             phoneNumber: "",
             symptom: "",
             doctor: "",
+            dateOfBirth: "",
+            gender: "",
+            passport: "",
+            email: "",
         });
         setModal(false);
         setIsUpdate(false);
@@ -245,6 +256,9 @@ const Patients = () => {
                                     <button onClick={() => setIsArchive(!isArchive)} className="size-6 pc:size-8 flex items-center justify-center text-base border rounded-full text-gray-600 border-gray-600 hover:bg-gray-600 hover:text-white transition-all duration-300">
                                         {isArchive ? <BiArchiveOut /> : <BiArchiveIn />}
                                     </button>
+                                    <Link to={"/admin/patients-reports"} className="size-6 pc:size-8 flex items-center justify-center text-base border rounded-full text-blue-600 border-blue-600 hover:bg-blue-600 hover:text-white transition-all duration-300">
+                                        <TbReportAnalytics />
+                                    </Link>
                                 </div>
                             </th>
                         </tr>

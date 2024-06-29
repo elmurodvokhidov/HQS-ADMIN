@@ -1,11 +1,11 @@
 import { LuLayoutDashboard } from "react-icons/lu";
 import { BsPerson } from "react-icons/bs";
-import { NavLink } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
 import { SlLayers } from "react-icons/sl";
 import { LiaChartPieSolid } from "react-icons/lia";
 
-
 function AdminSidebar({ modals, handleModal, closeAllModals }) {
+    const location = useLocation();
     return (
         <div className={`sidebar md:static absolute z-10 ${modals.sideModal ? "left-0" : "-left-full"} h-screen pt-16 overflow-y-auto shadow-smooth transition-all bg-white`}>
             <div onClick={() => handleModal("settingsModal", false)}>
@@ -28,7 +28,7 @@ function AdminSidebar({ modals, handleModal, closeAllModals }) {
                 <NavLink
                     to="patients"
                     onClick={closeAllModals}
-                    className="cell relative text-gray-500 border-b-2 py-4 md:px-5 pc:px-6 small:px-4 flex flex-col items-center">
+                    className={`${location.pathname === '/admin/patients-reports' && 'active'} cell relative text-gray-500 border-b-2 py-4 md:px-5 pc:px-6 small:px-4 flex flex-col items-center`}>
                     <BsPerson className="pc:text-4xl 2xl:text-3xl text-2xl" />
                     <h1 className="pc:text-lg text-base">Bemorlar</h1>
                 </NavLink>

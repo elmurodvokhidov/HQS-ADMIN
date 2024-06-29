@@ -2,7 +2,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { symptomFailure, symptomStart, symptomSuccess } from "../redux/slices/symptomSlice";
 import service from "../config/service";
 import React, { useEffect, useState } from "react";
-import PolarAreaChart from "./PolarAreaChart";
+// import PolarAreaChart from "./PolarAreaChart";
 import { MdFileDownload } from "react-icons/md";
 import * as XLSX from 'xlsx';
 
@@ -93,8 +93,8 @@ const Reports = () => {
             groupedPatients[date].length,
             groupedPatients[date].reduce((sum, patient) => sum + (patient.amount || 0), 0),
             ...filteredSymptoms.map(symptom => [
-                groupedPatients[date].filter(item => item.symptom === symptom._id).length,
-                groupedPatients[date].filter(item => item.symptom === symptom._id)
+                groupedPatients[date].filter(item => item.symptom._id === symptom._id).length,
+                groupedPatients[date].filter(item => item.symptom._id === symptom._id)
                     .reduce((sum, patient) => sum + (patient.amount || 0), 0)
             ]).flat()
         ]);
@@ -255,14 +255,13 @@ const Reports = () => {
                                 {filteredSymptoms.map(symptom => (
                                     <React.Fragment key={symptom._id}>
                                         <td className="px-4 py-2 border-2">
-                                            {groupedPatients[date].filter(item => item.symptom === symptom._id).length}
+                                            {groupedPatients[date].filter(item => item.symptom?._id === symptom._id).length}
                                         </td>
                                         <td className="px-4 py-2 border-2">
-                                            {groupedPatients[date].filter(item => item.symptom === symptom._id)?.reduce((sum, patient) => sum + patient?.amount, 0)?.toLocaleString()}
+                                            {groupedPatients[date].filter(item => item.symptom?._id === symptom._id)?.reduce((sum, patient) => sum + patient?.amount, 0)?.toLocaleString()}
                                         </td>
                                     </React.Fragment>
                                 ))}
-
                             </tr>
                         ))}
 
@@ -280,7 +279,7 @@ const Reports = () => {
                 </button>
             }
 
-            {symptoms.length > 0 && <PolarAreaChart symptoms={filteredSymptoms} />}
+            {/* {symptoms.length > 0 && <PolarAreaChart symptoms={filteredSymptoms} />} */}
         </div>
     )
 }

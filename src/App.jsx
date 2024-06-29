@@ -12,6 +12,7 @@ import Patients from "./pages/patients/Patients"
 import AdminProfile from "./pages/admin/AdminProfile"
 import Symptoms from "./pages/symptoms/Symptoms"
 import Reports from "./components/Reports"
+import PatientsReports from "./pages/patients/PatientsReports"
 
 const App = () => {
   const dispatch = useDispatch();
@@ -52,6 +53,7 @@ const App = () => {
           <Route path="profile" element={<AdminProfile />} />
           <Route path="symptoms" element={<Symptoms />} />
           <Route path="reports" element={<Reports />} />
+          <Route path="patients-reports" element={<PatientsReports />} />
         </Route>
       </Routes>
     </div>
