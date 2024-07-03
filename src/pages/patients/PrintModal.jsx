@@ -26,6 +26,19 @@ const PrintModal = ({
         printWindow.close();
     };
 
+    function findIndex(arr, el) {
+        for (let i = 0; i < arr.length; i++) {
+            if (arr[i]._id === el._id) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    const queuePatients = data?.symptom?.patients?.filter(patient => !patient?.seen);
+    const index = queuePatients && findIndex(queuePatients, data);
+    const result = queuePatients?.slice(0, index)?.length;
+
     return (
         <div onClick={clearAndClose} className="overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-screen max-h-full backdrop-blur-sm" style={{ display: data ? "flex" : "none" }}>
             <div onClick={(e) => e.stopPropagation()} className="relative p-4 w-full max-w-md max-h-full">
@@ -44,7 +57,7 @@ const PrintModal = ({
                             <center>
                                 <h3 style={{ fontSize: '20px' }}>Sizning raqamingiz:</h3>
                                 <h1 style={{ fontSize: '60px', fontWeight: '600' }}>{data?.queueNumber}</h1>
-                                <h2 style={{ fontSize: '18px', marginBottom: '10px', fontWeight: '600', textTransform: 'uppercase' }}>Sizdan oldin navbatda: <span>{data?.symptom?.patients?.filter(patient => patient?.queueNumber < data?.queueNumber).length}</span></h2>
+                                <h2 style={{ fontSize: '18px', marginBottom: '10px', fontWeight: '600', textTransform: 'uppercase' }}>Sizdan oldin navbatda: <span>{result}</span></h2>
                                 <h6 style={{ fontSize: '15px' }}>Tanlangan xizmatlar:</h6>
                                 <h2 style={{ fontSize: '25px', marginBottom: '10px', fontWeight: '600', textTransform: 'uppercase' }}>{data?.symptom?.name}</h2>
                                 <h3 style={{ fontSize: '15px' }}>Kelgan vaqt: <span>{new Date(data?.createdAt).toLocaleString()}</span></h3>

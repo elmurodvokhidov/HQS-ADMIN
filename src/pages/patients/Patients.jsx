@@ -174,7 +174,8 @@ const Patients = () => {
             try {
                 dispatch(patientStart());
                 if (!newPatient._id) {
-                    const { data } = await service.createPatient(newPatient);
+                    const queueNumber = symptoms.find(symptom => symptom._id === newPatient.symptom)?.patients?.length;
+                    const { data } = await service.createPatient({ ...newPatient, queueNumber });
                     Toast.fire({ icon: "success", title: "Yangi bemor qo'shildi" });
                     clearAndClose();
                     getAllPatientFunction();
@@ -343,6 +344,7 @@ const Patients = () => {
                 setNewPatient={setNewPatient}
                 clearAndClose={clearAndClose}
                 createAndUpdateFunction={createAndUpdateFunction}
+                patients={patients}
             />
 
             <DeleteModal
