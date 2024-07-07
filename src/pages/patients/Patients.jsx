@@ -174,7 +174,9 @@ const Patients = () => {
             try {
                 dispatch(patientStart());
                 if (!newPatient._id) {
-                    const queueNumber = symptoms.find(symptom => symptom._id === newPatient.symptom)?.patients?.length;
+                    const foundSymptom = symptoms.find(symptom => symptom._id === newPatient.symptom);
+                    const number = foundSymptom?.patients?.length;
+                    const queueNumber = `${foundSymptom?.name?.split("")[0].toUpperCase()}${number}`;
                     const { data } = await service.createPatient({ ...newPatient, queueNumber });
                     Toast.fire({ icon: "success", title: "Yangi bemor qo'shildi" });
                     clearAndClose();

@@ -162,7 +162,17 @@ const Reports = () => {
         });
         return groups;
     };
+
     const groupedPatients = groupByDate(totalPatients.flat());
+    const sortedDates = Object.keys(groupedPatients).sort((a, b) => {
+        const [dayA, monthA, yearA] = a.split('.').map(Number);
+        const [dayB, monthB, yearB] = b.split('.').map(Number);
+
+        const dateA = new Date(yearA, monthA - 1, dayA);
+        const dateB = new Date(yearB, monthB - 1, dayB);
+
+        return dateA - dateB;
+    });
 
     return (
         <div className="container">
@@ -247,7 +257,7 @@ const Reports = () => {
                                 </React.Fragment>
                             ))}
                         </tr>
-                        {Object.keys(groupedPatients).map(date => (
+                        {sortedDates.map(date => (
                             <tr key={date}>
                                 <td className="px-4 py-2 border-2">{date}</td>
                                 <td className="px-4 py-2 border-2">{groupedPatients[date].length}</td>
