@@ -7,9 +7,9 @@ import { Toast } from "../../config/sweetToast";
 import { MdFileDownload } from "react-icons/md";
 import SymptomModal from "./SymptomModal";
 import DeleteModal from "../../components/DeleteModal";
-import { FaPlus } from "react-icons/fa";
 import { Pencil } from "../../assets/icons/Pencil";
 import { Basket } from "../../assets/icons/Basket";
+import { GlobalButton } from "../../components/GlobalButton";
 
 const Symptoms = () => {
     const { symptoms, isLoading } = useSelector(state => state.symptom);
@@ -91,9 +91,7 @@ const Symptoms = () => {
                     <h1 className="text-xl pc:text-2xl">Bo'limlar ro'yhati</h1>
                     <p>Miqdor <span className="inline-block w-4 h-[1px] mx-1 align-middle bg-black"></span> <span>{symptoms?.length}</span></p>
                 </div>
-                <button onClick={() => setModal(true)} className="flex items-center gap-2 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800" type="button">
-                    Yangi qo'shish <FaPlus />
-                </button>
+                <GlobalButton setModal={setModal} />
             </div>
 
             <div className="relative overflow-x-auto shadow-md sm:rounded-lg">

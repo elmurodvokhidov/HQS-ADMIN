@@ -5,7 +5,7 @@ import { symptomFailure, symptomStart, symptomSuccess } from "../../redux/slices
 import { patientFailure, patientStart, patientSuccess } from "../../redux/slices/patientSlice";
 import { Toast } from "../../config/sweetToast";
 import * as XLSX from 'xlsx';
-import { FaPlus } from "react-icons/fa";
+import { FaPlus, FaSearch } from "react-icons/fa";
 import { MdOutlinePrint } from "react-icons/md";
 import PatientModal from "./PatientModal";
 import DeleteModal from "../../components/DeleteModal";
@@ -17,8 +17,8 @@ import { Basket } from "../../assets/icons/Basket";
 import PrintModal from "./PrintModal";
 import { BiArchiveIn, BiArchiveOut } from "react-icons/bi";
 import { Link } from "react-router-dom";
-import { LiaChartPieSolid } from "react-icons/lia";
 import { TbReportAnalytics } from "react-icons/tb";
+import { GlobalButton } from "../../components/GlobalButton";
 
 const Patients = () => {
     const { patients, isLoading } = useSelector(state => state.patient);
@@ -43,6 +43,7 @@ const Patients = () => {
     const [checkedPatientsList, setCheckedPatientsList] = useState([]);
     const [limit, setLimit] = useState(30);
     const [page, setPage] = useState(1);
+    const [search, setSearch] = useState("");
 
     const getAllPatientFunction = async () => {
         try {
@@ -114,14 +115,20 @@ const Patients = () => {
 
     const exportToExcel = () => {
         const fileName = 'patients.xlsx';
-        const header = ['Ism (FIO)', 'Telefon', 'Kasallik turi', 'Shifokor'];
+        const header = ['Ism (FIO)', 'Jinsi', 'Tug\'ilgan sanasi', 'Passport', 'Email manzili', 'Telefon', 'Navbat raqami', 'Kasallik turi', 'Shifokor', 'To\'ladi'];
 
         const wb = XLSX.utils.book_new();
-        const data = filteredPatients.map(patient => [
+        const data = searchedPatients.map(patient => [
             patient.fullname || '',
+            patient.gender || '',
+            patient.dateOfBirth || '',
+            patient.passport || '',
+            patient.email || '',
             (patient.phoneNumber || '').toString(),
+            (patient.queueNumber || '').toString(),
             patient?.symptom?.name || '',
             patient?.doctor?.fullname || '',
+            (patient.amount || '').toString(),
         ]);
         data.unshift(header);
         const ws = XLSX.utils.aoa_to_sheet(data);
@@ -165,9 +172,10 @@ const Patients = () => {
     };
 
     const filteredPatients = patients?.filter(patient => patient?.seen === isArchive);
+    const searchedPatients = filteredPatients?.filter(patient => patient?.fullname?.toLowerCase().includes(search.trim().toLowerCase()) || patient?.symptom?.name?.toLowerCase().includes(search.trim().toLowerCase()));
     const indexOfLastPatient = page * limit;
     const indexOfFirstPatient = indexOfLastPatient - limit;
-    const pagePatients = filteredPatients?.slice(indexOfFirstPatient, indexOfLastPatient);
+    const pagePatients = searchedPatients?.slice(indexOfFirstPatient, indexOfLastPatient);
 
     const createAndUpdateFunction = async () => {
         if (newPatient.fullname !== "" && newPatient.phoneNumber !== "" && newPatient.symptom !== "" && newPatient.doctor !== "") {
@@ -205,11 +213,20 @@ const Patients = () => {
             <div className="flex items-center justify-between mb-8">
                 <div className="flex flex-col justify-start text-sm pc:text-base">
                     <h1 className="text-xl pc:text-2xl">{isArchive ? "Arxivdagi bemorlar ro'yhati" : "Bemorlar ro'yhati"}</h1>
-                    <p>Miqdor <span className="inline-block w-4 h-[1px] mx-1 align-middle bg-black"></span> <span>{filteredPatients?.length}</span></p>
+                    <p>Miqdor <span className="inline-block w-4 h-[1px] mx-1 align-middle bg-black"></span> <span>{searchedPatients?.length}</span></p>
                 </div>
-                <button onClick={() => setModal(true)} className="flex items-center gap-2 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800" type="button">
-                    Yangi qo'shish <FaPlus />
-                </button>
+                <div className="flex items-center gap-4">
+                    <div className="w-80 h-10 flex items-center rounded-xl px-4 pc:py-2 bg-gray-100">
+                        <input
+                            onChange={(e) => setSearch(e.target.value)}
+                            type="text"
+                            placeholder="Qidiruv"
+                            className="w-full h-full ml-1 pc:text-lg text-base border-none focus:outline-none bg-transparent"
+                        />
+                        <FaSearch className="cursor-pointer text-base pc:text-lg text-gray-500 hover:text-blue-700" />
+                    </div>
+                    <GlobalButton setModal={setModal} />
+                </div>
             </div>
 
             <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
@@ -218,12 +235,12 @@ const Patients = () => {
                         <tr>
                             <th scope="col" className="px-6 py-3">
                                 <input
-                                    disabled={filteredPatients?.length === 0}
-                                    checked={filteredPatients?.length > 0 && filteredPatients?.every(patient => checkedPatientsList.includes(patient._id))}
+                                    disabled={searchedPatients?.length === 0}
+                                    checked={searchedPatients?.length > 0 && searchedPatients?.every(patient => checkedPatientsList.includes(patient._id))}
                                     onChange={(e) => {
                                         if (e.target.checked) {
                                             // Agar input belgilansa, barcha idlarni ro'yxatga saqlash
-                                            setCheckedPatientsList(filteredPatients?.map(patient => patient._id));
+                                            setCheckedPatientsList(searchedPatients?.map(patient => patient._id));
                                         } else {
                                             // Agar input belgilanmagan bo'lsa, ro'yxatni tozalash
                                             setCheckedPatientsList([]);
@@ -298,7 +315,7 @@ const Patients = () => {
                                     <td className="px-6 py-4 font-semibold">
                                         {patient?.queueNumber}
                                     </td>
-                                    <td className="px-6 py-4">
+                                    <td colSpan={2} className="px-6 py-4">
                                         <div className="flex items-center gap-2">
                                             <button
                                                 onClick={() => openUpdateModal(patient)}
@@ -329,7 +346,7 @@ const Patients = () => {
             {
                 !isLoading &&
                 <Pagination
-                    data={filteredPatients}
+                    data={searchedPatients}
                     page={page}
                     setPage={setPage}
                     limit={limit}

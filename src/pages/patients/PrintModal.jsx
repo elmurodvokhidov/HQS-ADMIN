@@ -1,30 +1,13 @@
 import { useRef } from "react";
 import { Cross } from "../../assets/icons/Cross"
+import ReactToPrint from "react-to-print";
+import logo from "../../assets/images/logo.png"
 
 const PrintModal = ({
     data,
     clearAndClose,
 }) => {
     const receiptRef = useRef();
-
-    const handlePrint = () => {
-        const content = receiptRef.current.innerHTML;
-        const printWindow = window.open('', '', 'width=900,height=650');
-        printWindow.document.write(`
-          <html>
-            <head>
-              <title>queue</title>
-            </head>
-            <body>
-                ${content}
-            </body>
-          </html>
-        `);
-        printWindow.document.close();
-        printWindow.focus();
-        printWindow.print();
-        printWindow.close();
-    };
 
     function findIndex(arr, el) {
         for (let i = 0; i < arr.length; i++) {
@@ -53,17 +36,78 @@ const PrintModal = ({
                         </button>
                     </div>
                     <div className="flex flex-col items-center gap-4 py-4">
-                        <div ref={receiptRef} className="w-72 border border-gray-300 rounded-lg bg-white text-center p-4">
-                            <center>
-                                <h3 style={{ fontSize: '20px' }}>Sizning raqamingiz:</h3>
-                                <h1 style={{ fontSize: '60px', fontWeight: '600' }}>{data?.queueNumber}</h1>
-                                <h2 style={{ fontSize: '18px', marginBottom: '10px', fontWeight: '600', textTransform: 'uppercase' }}>Sizdan oldin navbatda: <span>{result}</span></h2>
-                                <h6 style={{ fontSize: '15px' }}>Tanlangan xizmatlar:</h6>
-                                <h2 style={{ fontSize: '25px', marginBottom: '10px', fontWeight: '600', textTransform: 'uppercase' }}>{data?.symptom?.name}</h2>
-                                <h3 style={{ fontSize: '15px' }}>Kelgan vaqt: <span>{new Date(data?.createdAt).toLocaleString()}</span></h3>
+                        <div className="w-80 border border-gray-300 rounded-lg bg-white">
+                            <center ref={receiptRef} className="text-center p-4">
+                                <figure>
+                                    <img
+                                        className="size-40 mx-auto"
+                                        src={logo}
+                                        alt="logo"
+                                    />
+                                </figure>
+                                <div>
+                                    <div className="w-full flex justify-between gap-2">
+                                        <span className="text-gray-600">Ism (F.I.O)</span>
+                                        <div className="flex-grow border-b border-b-gray-600 border-dotted"></div>
+                                        <span className="text-gray-900">{data?.fullname}</span>
+                                    </div>
+                                    <div className="w-full flex justify-between gap-2">
+                                        <span className="text-gray-600">Telefon</span>
+                                        <div className="flex-grow border-b border-b-gray-600 border-dotted"></div>
+                                        <span className="text-gray-900">998{data?.phoneNumber}</span>
+                                    </div>
+                                    <div className="w-full flex justify-between gap-2">
+                                        <span className="text-gray-600">Tug'ilgan sana</span>
+                                        <div className="flex-grow border-b border-b-gray-600 border-dotted"></div>
+                                        <span className="text-gray-900">{data?.dateOfBirth}</span>
+                                    </div>
+                                    <div className="w-full flex justify-between gap-2">
+                                        <span className="text-gray-600">Jinsi</span>
+                                        <div className="flex-grow border-b border-b-gray-600 border-dotted"></div>
+                                        <span className="text-gray-900">{data?.gender}</span>
+                                    </div>
+                                    <div className="w-full flex justify-between gap-2">
+                                        <span className="text-gray-600">Sana</span>
+                                        <div className="flex-grow border-b border-b-gray-600 border-dotted"></div>
+                                        <span className="text-gray-900">{new Date(data?.createdAt).toLocaleString()}</span>
+                                    </div>
+                                    <div className="w-full flex justify-between gap-2">
+                                        <span className="text-gray-600">Bo'lim</span>
+                                        <div className="flex-grow border-b border-b-gray-600 border-dotted"></div>
+                                        <span className="text-gray-900">{data?.symptom?.name}</span>
+                                    </div>
+                                    <div className="w-full flex justify-between gap-2">
+                                        <span className="text-gray-600">Shifokor</span>
+                                        <div className="flex-grow border-b border-b-gray-600 border-dotted"></div>
+                                        <span className="text-gray-900">{data?.doctor?.fullname}</span>
+                                    </div>
+                                    <div className="w-full flex justify-between gap-2">
+                                        <span className="text-gray-600">Navbat raqami</span>
+                                        <div className="flex-grow border-b border-b-gray-600 border-dotted"></div>
+                                        <span className="text-gray-900">{data?.queueNumber}</span>
+                                    </div>
+                                    <div className="w-full flex justify-between gap-2">
+                                        <span className="text-gray-600">Sizdan avval navbatda</span>
+                                        <div className="flex-grow border-b border-b-gray-600 border-dotted"></div>
+                                        <span className="text-gray-900">{result}</span>
+                                    </div>
+                                    <div className="w-full flex justify-between gap-2">
+                                        <span className="text-gray-600">Xizmat narxi</span>
+                                        <div className="flex-grow border-b border-b-gray-600 border-dotted"></div>
+                                        <span className="text-gray-900">{data?.symptom?.price?.toLocaleString()} so'm</span>
+                                    </div>
+                                    <div className="w-full flex justify-between gap-2">
+                                        <span className="text-gray-600">To'ladi</span>
+                                        <div className="flex-grow border-b border-b-gray-600 border-dotted"></div>
+                                        <span className="text-gray-900">{data?.amount?.toLocaleString()} so'm</span>
+                                    </div>
+                                </div>
                             </center>
                         </div>
-                        <button onClick={handlePrint} className="w-32 h-10 rounded-3xl bg-cyan-600">Chop etish</button>
+                        <ReactToPrint
+                            trigger={() => <button className="w-32 h-10 rounded-3xl bg-cyan-600">Chop etish</button>}
+                            content={() => receiptRef.current}
+                        />
                     </div>
                 </div>
             </div>

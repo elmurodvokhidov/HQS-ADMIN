@@ -4,15 +4,15 @@ import { doctorFailure, doctorStart, doctorSuccess } from "../../redux/slices/do
 import service from "../../config/service";
 import tick from "../../assets/icons/tick.svg";
 import copy from "../../assets/icons/copy.svg";
-import { FaPlus } from "react-icons/fa";
 import { symptomFailure, symptomStart, symptomSuccess } from "../../redux/slices/symptomSlice";
 import DoctorModal from "./DoctorModal";
 import DeleteModal from "../../components/DeleteModal";
 import { Toast } from "../../config/sweetToast";
 import * as XLSX from 'xlsx';
-import { MdFileDownload, MdOutlinePrint } from "react-icons/md";
+import { MdFileDownload } from "react-icons/md";
 import { Basket } from "../../assets/icons/Basket";
 import { Pencil } from "../../assets/icons/Pencil";
+import { GlobalButton } from "../../components/GlobalButton";
 
 const Doctors = () => {
     const { doctors, isLoading } = useSelector(state => state.doctor);
@@ -120,9 +120,7 @@ const Doctors = () => {
                     <h1 className="text-xl pc:text-2xl">Shifokorlar ro'yhati</h1>
                     <p>Miqdor <span className="inline-block w-4 h-[1px] mx-1 align-middle bg-black"></span> <span>{doctors?.length}</span></p>
                 </div>
-                <button onClick={() => setModal(true)} className="flex items-center gap-2 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800" type="button">
-                    Yangi qo'shish <FaPlus />
-                </button>
+                <GlobalButton setModal={setModal} />
             </div>
 
             <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
